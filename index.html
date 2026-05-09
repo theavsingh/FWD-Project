@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyFlow - Academic Workspace</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="cmd-palette" class="modal" style="display: none;">
+        <div class="cmd-content">
+            <span class="cmd-hint">Type to add task, or <strong>/vault</strong> [name] [url], <strong>/spot</strong> [name]</span>
+            <input type="text" id="cmd-input" placeholder="What's next? (Press Esc to close)" autocomplete="off">
+        </div>
+    </div>
+
+    <section id="login-section">
+        <div class="login-container">
+            <div class="logo-large">StudyFlow</div>
+            <p class="subtitle">Minimalist Academic Focus</p>
+            <form id="login-form">
+                <input type="text" id="username" placeholder="Enter Student Name" required autocomplete="off">
+                <button type="submit" class="btn-primary">Enter Workspace</button>
+            </form>
+        </div>
+    </section>
+
+    <div id="app-dashboard" style="display: none;">
+        
+        <header>
+            <div class="logo">StudyFlow <span style="font-size: 0.7rem; color: var(--text-muted);">(Ctrl+K for Commands)</span></div>
+            <div class="user-info">Welcome, <span id="display-name">Student</span></div>
+        </header>
+
+        <nav>
+            <button class="nav-btn active" data-tab="planner" onclick="switchTab('planner')">Focus & Tasks</button>
+            <button class="nav-btn" data-tab="vault" onclick="switchTab('vault')">Dev Vault</button>
+            <button class="nav-btn" data-tab="countdown" onclick="switchTab('countdown')">Exams</button>
+            <button class="nav-btn" data-tab="locations" onclick="switchTab('locations')">Locations</button>
+            <button class="nav-btn" data-tab="gallery" onclick="switchTab('gallery')">Whiteboard</button>
+        </nav>
+
+        <main id="planner-tab" class="tab-content active">
+            <div class="card pomodoro-card">
+                <h2>Focus Session</h2>
+                <div class="timer-display" id="pomodoro-time">25:00</div>
+                <div class="timer-controls">
+                    <button class="btn-primary" onclick="startTimer()">Start</button>
+                    <button class="btn-secondary" onclick="pauseTimer()">Pause</button>
+                    <button class="btn-secondary" onclick="resetTimer()">Reset</button>
+                </div>
+                <div class="timer-modes">
+                    <button class="btn-secondary" onclick="setTimerMode(25)">25m</button>
+                    <button class="btn-secondary" onclick="setTimerMode(5)">5m</button>
+                    <button class="btn-secondary" onclick="setTimerMode(15)">15m</button>
+                </div>
+                <div class="stats-bar">
+                    Deep Focus Cycles Today: <strong id="cycle-count" style="color: var(--accent);">0</strong>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Active Tasks</h2>
+                <div class="input-group">
+                    <input type="text" id="task-input" placeholder="Define objective...">
+                    <button class="btn-primary" onclick="addTask()">Add</button>
+                </div>
+                <ul id="task-list"></ul>
+            </div>
+        </main>
+
+        <main id="vault-tab" class="tab-content">
+            <div class="card">
+                <h2>Resource Vault</h2>
+                <p class="subtitle" style="margin-top:-10px;">Store repos, docs, and syllabus PDFs.</p>
+                <div class="input-group">
+                    <input type="text" id="vault-name" placeholder="Resource Name (e.g., Supabase Docs)">
+                    <input type="text" id="vault-url" placeholder="https://...">
+                    <button class="btn-primary" onclick="addVaultItem()">Save</button>
+                </div>
+                <ul id="vault-list" class="vault-grid"></ul>
+            </div>
+        </main>
+
+        <main id="countdown-tab" class="tab-content">
+            <div class="card">
+                <h2>Milestone & Exam Tracker</h2>
+                <div class="input-group">
+                    <input type="text" id="exam-name" placeholder="Subject / Milestone Name">
+                    <input type="date" id="exam-date">
+                    <button class="btn-primary" onclick="addExam()">Track</button>
+                </div>
+                <div id="countdown-container" class="countdown-grid"></div>
+            </div>
+        </main>
+
+        <main id="locations-tab" class="tab-content">
+            <div class="card">
+                <h2>Focus Environments</h2>
+                <div class="input-group">
+                    <input type="text" id="spot-name" placeholder="Location Name">
+                    <select id="spot-type">
+                        <option value="Lab">Lab</option>
+                        <option value="Library">Library</option>
+                        <option value="Cafe">Cafe</option>
+                        <option value="Quiet Room">Quiet Room</option>
+                    </select>
+                    <button class="btn-primary" onclick="addSpot()">Save</button>
+                </div>
+                <ul id="spot-list"></ul>
+            </div>
+        </main>
+
+        <main id="gallery-tab" class="tab-content">
+            <div class="card">
+                <h2>Persistent Whiteboard</h2>
+                <p class="subtitle" style="margin-top:-10px;">Drawings auto-save to local storage.</p>
+                <div class="canvas-container">
+                    <canvas id="whiteboard"></canvas>
+                </div>
+                <div class="toolbar">
+                    <button class="btn-secondary" onclick="clearBoard()">Wipe Board</button>
+                    <button class="btn-primary" onclick="saveBoardToGallery()">Save to Gallery</button>
+                </div>
+            </div>
+            <div class="card">
+                <h2>Visual Assets <span style="font-size:0.8rem; color:var(--text-muted);">(Max 20)</span></h2>
+                <div class="upload-area">
+                    <input id="file-upload" type="file" accept="image/*" onchange="previewImage(event)" hidden/>
+                    <label for="file-upload" class="btn-secondary" style="display:inline-block; margin-bottom: 15px;">Upload Image</label>
+                    <button class="btn-secondary" style="margin-left: 10px;" onclick="clearGallery()">Clear Gallery</button>
+                </div>
+                <div id="image-gallery" class="gallery-grid"></div>
+            </div>
+        </main>
+
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
